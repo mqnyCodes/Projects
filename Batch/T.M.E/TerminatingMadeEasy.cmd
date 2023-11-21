@@ -85,55 +85,9 @@ goto home
 ) else (
 taskkill /f /im %terminateProcess% > nul
 echo Successfully killed %terminateProcess%
-goto feedback
+pause > nul
+exit
 )
-
-:feedback
-cls
-echo Do you want to submit feedback?
-echo [Y/N]
-set /p feedback=
-if %feedback% == Y goto submitfeedback
-if %feedback% == N goto nofeedback
-
-:submitfeedback
-@echo off
-setlocal enabledelayedexpansion
-cls
-rem Update the content of payload.json with the feedback message
-echo Send your feedback here, it will be sent to our discord server so mqnyTech can review the feedback!
-set /p feedback=
-echo What is your name (Displayed on the Discord server):
-set /p name=
-REM Get the current date and time in a consistent format
-for /f "tokens=2 delims==" %%I in ('"wmic os get localdatetime /value"') do set datetime=%%I
-set "year=%datetime:~0,4%"
-set "month=%datetime:~4,2%"
-set "day=%datetime:~6,2%"
-set "hour=%datetime:~8,2%"
-set "minute=%datetime:~10,2%"
-
-echo { "content": "By user: %name%, Date: %year%-%month%-%day% !hour!:!minute! - Feedback: %feedback%" } > payload.json
-
-rem Discord webhook URL
-set "webhookURL=https://discord.com/api/webhooks/1162798240194908310/XA1MrIT0bGa5oyEVw7K-5P9krHkuesAriL1sz0vMRVov2oR5pylJnZ5ztubL-RIsEsBj"
-
-rem Send the payload to Discord using curl
-curl -H "Content-Type: application/json" -d @payload.json %webhookURL%
-
-rem Delete the temporary payload file
-del payload.json
-
-echo Feedback sent. Thank you!
-timeout /t 3 /nobreak > nul
-exit
-
-:nofeedback
-cls
-echo Okay, that's fine
-echo Bye!
-timeout /t 3 /nobreak > nul
-exit
 
 :noterminate
 cls
